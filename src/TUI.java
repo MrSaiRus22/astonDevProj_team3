@@ -2,43 +2,60 @@ import java.util.*;
 
 public class TUI {
 
-    //пока примерные названия. по мере заполнения классов необходимо их изменить "Автобус", "Пользователь", "Студент", "Автомобиль", "Бочка"
-    private static final ArrayList<String> classNameList = new ArrayList<>(List.of("Автобус", "Пользователь", "Студент", "Автомобиль", "Бочка", "Выход"));
-
+    //пока примерные названия. по мере заполнения классов необходимо их изменить List.of("Автобус", "Пользователь", "Студент", "Автомобиль", "Бочка", "Выход")
+    private static final ArrayList<String> classNameList = new ArrayList<>();
     //"Заполнить из готового файла","Заполнить вручную","Заполнение рандомно","Назад","Выход"
     private static final ArrayList<String> fillMethodList = new ArrayList<>(List.of("Заполнить из готового файла","Заполнить вручную","Заполнение рандомно","Назад","Выход"));
-
     //"","","","","",
-    private static final ArrayList<String> objectFieldsList = new ArrayList<>(List.of());
+    private static final ArrayList<String> objectFieldsList = new ArrayList<>();
 
     private static ArrayList<Integer> screenHistory = new ArrayList<>();
-
     private static final Scanner sc = new Scanner(System.in);
-
     private static boolean exitFlag = false;
-
     private static int currentScreen = 0;
 
     private static String userClassChoice;
-
     private static String userFillMethodChoice;
-
     private static String userFieldToSortChoice;
+    private static int userListLengthChoice;
+
+    private static HashMap<String, AbstractCustomClass> classPool = new HashMap<>();
+    private static ArrayList<AbstractCustomClass> chosenClassList = new ArrayList<>();
 
 
 
     public static void TUI_cycle() {
         screenHistory.addLast(1);
+        fillClassPool();
+        classNameList.addAll(classPool.keySet());
+        classNameList.addLast("Выход");
+
         while (!exitFlag) {
-            switch (screenHistory.get(currentScreen)) {
-                case 1 : firstScreenSwitch();
-                    break;
-                case 2 : secondScreenSwitch();
-                    break;
-                default : continue;
+            try {
+                switch (screenHistory.get(currentScreen)) {
+                    case 1:
+                        firstScreenSwitch();
+                        break;
+                    case 2:
+                        secondScreenSwitch();
+                        break;
+                    case 3:
+                        thirdScreenSwitch(classPool.get(userClassChoice));
+                        break;
+                    default:
+                        continue;
+                }
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Main switch out of bound");
+                currentScreen--;
             }
         }
     }
+
+    private static void fillClassPool() {
+        classPool.put("Test", new TestClass());
+    }
+
 
     private static void firstScreenSwitch() {
         firstScreenPrint();
@@ -73,31 +90,25 @@ public class TUI {
         secondScreenPrint();
         try {
             int userInput = sc.nextInt() - 1;
-            userFillMethodChoice = fillMethodList.get(userInput);
+
             //Выход если выбран выход
-            if (userFillMethodChoice.toLowerCase(Locale.ROOT).contentEquals("выход")) Runtime.getRuntime().exit(0);
-
-            if (userFillMethodChoice.toLowerCase(Locale.ROOT).contentEquals("назад")) {
+            if (fillMethodList.get(userInput).toLowerCase(Locale.ROOT).contentEquals("выход")) {
+                Runtime.getRuntime().exit(0);
+            }else if (fillMethodList.get(userInput).toLowerCase(Locale.ROOT).contentEquals("назад")) {
                 currentScreen--;
+                screenHistory.removeLast();
                 return;
-            }
-            else {
+            } else {
+                userFillMethodChoice = fillMethodList.get(userInput);
                 currentScreen++;
-                if (screenHistory.size() <= currentScreen){
-                    screenHistory.set(currentScreen, 3);
-                } else {
-                    screenHistory.addLast(3);
-                }
+                screenHistory.addLast(3);
             }
-
-
-
         } catch (InputMismatchException e) {
             System.out.println("Введите число, а не что-то еще");
             sc.next();
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Введите значение внутри диапазона выбора");
-            sc.next();
+            return;
         }
 
 
@@ -107,31 +118,38 @@ public class TUI {
         thirdScreenPrint(obj);
         try {
             int userInput = sc.nextInt() - 1;
-            userFillMethodChoice = fillMethodList.get(userInput);
             //Выход если выбран выход
-            if (userFillMethodChoice.toLowerCase(Locale.ROOT).contentEquals("выход")) Runtime.getRuntime().exit(0);
-
-            if (userFillMethodChoice.toLowerCase(Locale.ROOT).contentEquals("назад")) {
+            if (objectFieldsList.get(userInput).toLowerCase(Locale.ROOT).contentEquals("выход")) {
+                Runtime.getRuntime().exit(0);
+            } else if (objectFieldsList.get(userInput).toLowerCase(Locale.ROOT).contentEquals("назад")) {
                 currentScreen--;
+                screenHistory.removeLast();
                 return;
-            }
-            else {
+            } else {
+                userFieldToSortChoice = objectFieldsList.get(userInput);
                 currentScreen++;
-                if (screenHistory.size() <= currentScreen){
-                    screenHistory.set(currentScreen, 3);
-                } else {
-                    screenHistory.addLast(3);
-                }
+                screenHistory.addLast(4);
             }
-
-
-
         } catch (InputMismatchException e) {
             System.out.println("Введите число, а не что-то еще");
             sc.next();
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Введите значение внутри диапазона выбора");
             sc.next();
+        }
+    }
+
+    private static void fourthScreenSwitch() {
+        fourthScreenPrint();
+        int userInput = chosenClassList.size();
+        try {
+            userInput = sc.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Введите целое число");
+        }
+
+        if (userInput == 0) {
+
         }
 
 
@@ -144,6 +162,7 @@ public class TUI {
         for (int i = 0; i < classNameList.size(); i++) {
             System.out.println((i+1) + ". " + classNameList.get(i));
         }
+
 
     }
 
@@ -162,13 +181,23 @@ public class TUI {
         System.out.println("Выбран метод заполнения: " + userFillMethodChoice + "\n");
         System.out.println("Выберите поле для сортировки:");
         int i = 1;
-        objectFieldsList.addAll(obj.getFields(), "Назад", "Выход");
+        objectFieldsList.clear();
+        objectFieldsList.addAll(obj.getFields());
+        objectFieldsList.addLast("Назад");
+        objectFieldsList.addLast("Выход");
+
         for (String s : objectFieldsList) {
             System.out.println(i + ". " + s);
             i++;
         }
+    }
 
-
+    private static void fourthScreenPrint () {
+        clearConsole();
+        System.out.println("Выбран класс: " + userClassChoice);
+        System.out.println("Выбран метод заполнения: " + userFillMethodChoice);
+        System.out.println("Выбрано поле для сортировки: " + userFieldToSortChoice + "\n");
+        System.out.print("Выберите длину готового списка. По умолчанию сортируется весь диапазон(" + chosenClassList.size() + " строк).\n Чтобы перейти назад введите \"0\", чтобы выйти введите \"-1\"\n");
     }
 
     private static void clearConsole() {
