@@ -7,8 +7,8 @@ public class TestClass extends AbstractCustomClass {
 
 
     @Override
-    String[] getFields() {
-        return new String[]{"age", "name", "password"};
+    ArrayList<String> getFields() {
+        return new ArrayList.listOf("age", "name", "password");
     }
 
     @Override

@@ -3,13 +3,13 @@ import java.util.*;
 public class TUI {
 
     //пока примерные названия. по мере заполнения классов необходимо их изменить "Автобус", "Пользователь", "Студент", "Автомобиль", "Бочка"
-    private static final ArrayList<String> firstScreenArray = new ArrayList<>(List.of("Автобус", "Пользователь", "Студент", "Автомобиль", "Бочка", "Выход"));
+    private static final ArrayList<String> classNameList = new ArrayList<>(List.of("Автобус", "Пользователь", "Студент", "Автомобиль", "Бочка", "Выход"));
 
     //"Заполнить из готового файла","Заполнить вручную","Заполнение рандомно","Назад","Выход"
-    private static final ArrayList<String> secondScreenArray = new ArrayList<>(List.of("Заполнить из готового файла","Заполнить вручную","Заполнение рандомно","Назад","Выход"));
+    private static final ArrayList<String> fillMethodList = new ArrayList<>(List.of("Заполнить из готового файла","Заполнить вручную","Заполнение рандомно","Назад","Выход"));
 
     //"","","","","",
-    private static final ArrayList<String> thirdScreenArray = new ArrayList<>(List.of());
+    private static final ArrayList<String> objectFieldsList = new ArrayList<>(List.of());
 
     private static ArrayList<Integer> screenHistory = new ArrayList<>();
 
@@ -22,6 +22,8 @@ public class TUI {
     private static String userClassChoice;
 
     private static String userFillMethodChoice;
+
+    private static String userFieldToSortChoice;
 
 
 
@@ -43,7 +45,7 @@ public class TUI {
         try {
             int userInput = sc.nextInt() - 1;
 
-            userClassChoice = firstScreenArray.get(userInput);
+            userClassChoice = classNameList.get(userInput);
             //Выход если выбран выход
             if (userClassChoice.toLowerCase(Locale.ROOT).contentEquals("выход")) Runtime.getRuntime().exit(0);
 
@@ -71,7 +73,41 @@ public class TUI {
         secondScreenPrint();
         try {
             int userInput = sc.nextInt() - 1;
-            userFillMethodChoice = secondScreenArray.get(userInput);
+            userFillMethodChoice = fillMethodList.get(userInput);
+            //Выход если выбран выход
+            if (userFillMethodChoice.toLowerCase(Locale.ROOT).contentEquals("выход")) Runtime.getRuntime().exit(0);
+
+            if (userFillMethodChoice.toLowerCase(Locale.ROOT).contentEquals("назад")) {
+                currentScreen--;
+                return;
+            }
+            else {
+                currentScreen++;
+                if (screenHistory.size() <= currentScreen){
+                    screenHistory.set(currentScreen, 3);
+                } else {
+                    screenHistory.addLast(3);
+                }
+            }
+
+
+
+        } catch (InputMismatchException e) {
+            System.out.println("Введите число, а не что-то еще");
+            sc.next();
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Введите значение внутри диапазона выбора");
+            sc.next();
+        }
+
+
+    }
+
+    private static void thirdScreenSwitch(AbstractCustomClass obj) {
+        thirdScreenPrint(obj);
+        try {
+            int userInput = sc.nextInt() - 1;
+            userFillMethodChoice = fillMethodList.get(userInput);
             //Выход если выбран выход
             if (userFillMethodChoice.toLowerCase(Locale.ROOT).contentEquals("выход")) Runtime.getRuntime().exit(0);
 
@@ -105,8 +141,8 @@ public class TUI {
     private static void firstScreenPrint() {
         clearConsole();
         System.out.println("Выберите класс для сортировки (Введите число)");
-        for (int i = 0; i < firstScreenArray.size(); i++) {
-            System.out.println((i+1) + ". " + firstScreenArray.get(i));
+        for (int i = 0; i < classNameList.size(); i++) {
+            System.out.println((i+1) + ". " + classNameList.get(i));
         }
 
     }
@@ -115,14 +151,22 @@ public class TUI {
         clearConsole();
         System.out.println("Выбран класс: " + userClassChoice + "\n");
         System.out.println("Выберите метод заполнения массива класса (Введите число)");
-        for (int i = 0; i < secondScreenArray.size(); i++) {
-            System.out.println((i+1) + ". " + secondScreenArray.get(i));
+        for (int i = 0; i < fillMethodList.size(); i++) {
+            System.out.println((i+1) + ". " + fillMethodList.get(i));
         }
     }
 
-    private static void thirdScreenPrint() {
+    private static void thirdScreenPrint(AbstractCustomClass obj) {
         clearConsole();
-        System.out.println("Выберите поле для сортировки");
+        System.out.println("Выбран класс: " + userClassChoice);
+        System.out.println("Выбран метод заполнения: " + userFillMethodChoice + "\n");
+        System.out.println("Выберите поле для сортировки:");
+        int i = 1;
+        objectFieldsList.addAll(obj.getFields(), "Назад", "Выход");
+        for (String s : objectFieldsList) {
+            System.out.println(i + ". " + s);
+            i++;
+        }
 
 
     }
