@@ -1,4 +1,8 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.Arrays.stream;
 
 public class TestClass extends AbstractCustomClass {
     private int age;
@@ -7,8 +11,8 @@ public class TestClass extends AbstractCustomClass {
 
 
     @Override
-    String[] getFields() {
-        return new String[]{"age", "name", "password"};
+    ArrayList<String> getFields() {
+        return new ArrayList<String>(List.of("age", "name", "password"));
     }
 
     @Override
