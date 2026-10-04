@@ -10,13 +10,15 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class UserListFiller implements ListFiller<User> {
     private static final Pattern USER_PATTERN = Pattern.compile("^([^;]+);([^;]+);([^;]+)$");
     private static final String USER_FILE_PATH  = "src/Files/UserList";
-    private static final java.util.Scanner SCANNER = new java.util.Scanner(System.in);
+    private static final Scanner SCANNER = new Scanner(System.in);
+
 
     private User parseUser(String line) {
         Matcher matcher = USER_PATTERN.matcher(line);

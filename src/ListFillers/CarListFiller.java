@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +18,8 @@ public final class CarListFiller implements ListFiller<Car> {
 
     private static final Pattern CAR_PATTERN = Pattern.compile("^(\\d{2,4});([^;]+);(\\d{4})$");
     private static final String CAR_DATA_PATH = "src/Files/CarList";
-    private static final java.util.Scanner SCANNER = new java.util.Scanner(System.in);
+    private static final Scanner SCANNER = new Scanner(System.in);
+
 
     private Car parseCar(String line) {
         Matcher matcher = CAR_PATTERN.matcher(line);
